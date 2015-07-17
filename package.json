@@ -1,0 +1,8 @@
+{
+    "name": "trellofire",
+    "version": "0.1",
+    "dependencies": {
+        "less": "~2.5",
+        "pegjs": "~0.8"
+    }
+}
