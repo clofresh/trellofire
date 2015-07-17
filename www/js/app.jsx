@@ -56,11 +56,7 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
   var TrelloBoard = React.createClass({
     getInitialState: function() {
       return {
-        query: {
-
-        },
-        cards: [],
-        grouping: "idList"
+        cards: []
       };
     },
 
@@ -75,6 +71,11 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
         }
         this.setState(data);
       }.bind(this));
+    },
+
+    updateQuery: function(query) {
+      this.state.query = query;
+      this.setState(this.state);
     },
 
     render: function() {
@@ -99,9 +100,7 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
 
       return (
         <div className="container">
-          <h3 className="page-header">
-                                                  <input id="queryInput" type="text" className="form-control" value={this.state.query.str} />
-                                                  </h3> {groups}
+          <QueryBar updateQuery={this.updateQuery} /> {groups}
         </div>
       );
     },
@@ -115,6 +114,52 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
     }
   });
 
+  var QueryBar = React.createClass({
+    getInitialState: function() {
+      return {
+        query: Query.parse("board:nC8QJJoZ groupby:idList")
+      };
+    },
+    handleKeyUp: function() {
+      clearTimeout(this.props.typingTimer);
+      this.props.typingTimer = setTimeout(this.props.updateQuery, 500);
+    },
+    handleKeyDown: function() {
+      clearTimeout(this.props.typingTimer);
+    },
+    render: function() {
+      return (
+        <h3 className="page-header"><input id="queryInput"
+                  type="text"
+                  className="form-control"
+                  value={this.state.query.str}
+                  onKeyUp={this.handleKeyUp}
+                  onKeyDown={this.handleKeyDown} /></h3>
+      );
+    }
+  });
+
+  var Controller = React.createClass({
+    getDefaultProps: function() {
+      return {
+        typingTimer: null
+      };
+    },
+    handleKeyup: function() {
+      clearTimeout(this.props.typingTimer);
+      this.props.typingTimer = setTimeout(this.props.updateQuery, 500);
+    },
+    handleKeydown: function() {
+      clearTimeout(this.props.typingTimer);
+    },
+    render: function() {
+      return (
+        <div>
+          <TrelloBoard />
+        </div>
+      );
+    }
+  });
 
   var App = {
     hotkey: 126 // ~
@@ -170,20 +215,7 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
   App.init = function(boardId) {
     // this.enter('browse');
 
-    React.render(<TrelloBoard board={boardId} />, document.body);
-
-    var typingTimer;
-    $('#queryInput').on('keyup', function() {
-      clearTimeout(typingTimer);
-      var queryInput = this;
-      typingTimer = setTimeout(function() {
-        console.log(Query.parse($(queryInput).val()));
-      }, 500);
-    });
-
-    $('#queryInput').on('keydown', function() {
-      clearTimeout(typingTimer);
-    });
+    React.render(<Controller />, document.body);
 
   };
 
