@@ -2,6 +2,47 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
 
   var lists = {};
 
+  var QueryBar = React.createClass({
+    getDefaultProps: function() {
+      return {
+        queue: []
+      };
+    },
+    getInitialState: function() {
+      return Query.parse("board:nC8QJJoZ groupby:idList");
+    },
+    handleSubmit: function(event) {
+      event.preventDefault();
+      this.updateVal(event.target.getElementsByTagName('input')[0].value);
+    },
+    handleChange: function(event) {
+      if (this.state.timer) {
+        clearTimeout(this.state.timer);
+      }
+      var input = event.target;
+      this.state.timer = setTimeout(function() {
+        this.updateVal(input.value);
+      }.bind(this), 500);
+    },
+    updateVal: function(val) {
+      var state;
+      if (val === "") {
+        state = {
+          str: ""
+        };
+      } else {
+        state = Query.parse(val);
+      }
+      this.setState(state);
+      this.props.onUpdate(state);
+    },
+    render: function() {
+      return (
+        <h3 className="page-header"><form onSubmit={this.handleSubmit}><input id="queryInput" type="text" className="form-control" defaultValue={this.state.str} onChange={this.handleChange} /></form></h3>
+      );
+    }
+  });
+
   var TrelloItem = React.createClass({
     render: function() {
       return (
@@ -56,16 +97,19 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
   var TrelloBoard = React.createClass({
     getInitialState: function() {
       return {
-        query: {
-
+        response: {
+          cards: []
         },
-        cards: [],
-        grouping: "idList"
+        filtered: [],
+        query: {
+          board: 'nC8QJJoZ',
+          groupby: 'idList'
+        }
       };
     },
-
-    componentDidMount: function() {
-      Trello.boards.get(this.props.board, {
+    updateBoard: function(query) {
+      console.log('Updating board with query', query);
+      Trello.boards.get(query.board, {
         cards: 'all',
         lists: 'all'
       }, function(data) {
@@ -73,15 +117,32 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
           var list = data.lists[i];
           lists[list.id] = list;
         }
-        this.setState(data);
+        this.setState({
+          response: data,
+          filtered: [],
+          query: query
+        });
       }.bind(this));
+    },
+    componentDidMount: function() {
+      this.updateBoard(this.state.query);
+    },
+
+    updateQuery: function(query) {
+      if (this.state.query.board !== query.board) {
+        this.updateBoard(query);
+      } else {
+        this.state.query = query;
+        this.setState(this.state);
+      }
     },
 
     render: function() {
       var grouped = {};
-      for (var i = 0; i < this.state.cards.length; i++) {
-        var card = this.state.cards[i];
-        var key = card[this.state.grouping];
+      var cards = this.state.response.cards;
+      for (var i = 0; i < cards.length; i++) {
+        var card = cards[i];
+        var key = card[this.state.query.groupby];
         if (grouped[key] === undefined) {
           grouped[key] = [card];
         } else {
@@ -99,15 +160,13 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
 
       return (
         <div className="container">
-          <h3 className="page-header">
-                                                  <input id="queryInput" type="text" className="form-control" value={this.state.query.str} />
-                                                  </h3> {groups}
+          <QueryBar onUpdate={this.updateQuery} /> {groups}
         </div>
       );
     },
 
     groupName: function(group) {
-      if (this.state.grouping === "idList") {
+      if (this.state.query.groupby === "idList") {
         return lists[group].name;
       } else {
         return group;
@@ -115,75 +174,9 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
     }
   });
 
-
-  var App = {
-    hotkey: 126 // ~
-  };
-
-  App.enter = function(stateName) {
-    var state = this.states[stateName];
-    if (state == undefined) {
-      throw 'Invalid state: ' + JSON.stringify(stateName);
-    }
-    console.log('Entering state: ' + stateName);
-    if (this.current) {
-      this.current.exit.bind(this)();
-    }
-    state.enter.bind(this)();
-    this.current = state;
-  };
-
-  App.states = {};
-
-  App.states.browse = {
-    enter: function() {
-      $(document).keypress(function(evt) {
-        evt.preventDefault();
-        console.log('browse keypress', evt.keyCode);
-        if (evt.keyCode === App.hotkey) {
-          this.enter('launcher');
-        }
-      }.bind(this));
-    },
-    update: function() {},
-    exit: function() {
-      $(document).off('keypress');
-    }
-  };
-
-  App.states.launcher = {
-    enter: function() {
-      $(document).keypress(function(evt) {
-        evt.preventDefault();
-        console.log('browse keypress', evt.keyCode);
-        if (evt.keyCode === App.hotkey) {
-          this.enter('browse');
-        }
-      }.bind(this));
-    },
-    update: function() {},
-    exit: function() {
-      $(document).off('keypress');
-    }
-  };
-
+  var App = {};
   App.init = function(boardId) {
-    // this.enter('browse');
-
-    React.render(<TrelloBoard board={boardId} />, document.body);
-
-    var typingTimer;
-    $('#queryInput').on('keyup', function() {
-      clearTimeout(typingTimer);
-      var queryInput = this;
-      typingTimer = setTimeout(function() {
-        console.log(Query.parse($(queryInput).val()));
-      }, 500);
-    });
-
-    $('#queryInput').on('keydown', function() {
-      clearTimeout(typingTimer);
-    });
+    React.render(<TrelloBoard />, document.body);
 
   };
 
