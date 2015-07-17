@@ -1,4 +1,4 @@
-define(['react', 'trello'], function(React, Trello) {
+define(['react', 'trello', 'query'], function(React, Trello, Query) {
 
   var lists = {};
 
@@ -56,7 +56,9 @@ define(['react', 'trello'], function(React, Trello) {
   var TrelloBoard = React.createClass({
     getInitialState: function() {
       return {
-        name: "Trellofire",
+        query: {
+
+        },
         cards: [],
         grouping: "idList"
       };
@@ -97,7 +99,9 @@ define(['react', 'trello'], function(React, Trello) {
 
       return (
         <div className="container">
-          <h1 className="page-header">{this.state.name}</h1> {groups}
+          <h3 className="page-header">
+                                                  <input id="queryInput" type="text" className="form-control" value={this.state.query.str} />
+                                                  </h3> {groups}
         </div>
       );
     },
@@ -112,10 +116,75 @@ define(['react', 'trello'], function(React, Trello) {
   });
 
 
-  var App = {};
+  var App = {
+    hotkey: 126 // ~
+  };
+
+  App.enter = function(stateName) {
+    var state = this.states[stateName];
+    if (state == undefined) {
+      throw 'Invalid state: ' + JSON.stringify(stateName);
+    }
+    console.log('Entering state: ' + stateName);
+    if (this.current) {
+      this.current.exit.bind(this)();
+    }
+    state.enter.bind(this)();
+    this.current = state;
+  };
+
+  App.states = {};
+
+  App.states.browse = {
+    enter: function() {
+      $(document).keypress(function(evt) {
+        evt.preventDefault();
+        console.log('browse keypress', evt.keyCode);
+        if (evt.keyCode === App.hotkey) {
+          this.enter('launcher');
+        }
+      }.bind(this));
+    },
+    update: function() {},
+    exit: function() {
+      $(document).off('keypress');
+    }
+  };
+
+  App.states.launcher = {
+    enter: function() {
+      $(document).keypress(function(evt) {
+        evt.preventDefault();
+        console.log('browse keypress', evt.keyCode);
+        if (evt.keyCode === App.hotkey) {
+          this.enter('browse');
+        }
+      }.bind(this));
+    },
+    update: function() {},
+    exit: function() {
+      $(document).off('keypress');
+    }
+  };
 
   App.init = function(boardId) {
+    // this.enter('browse');
+
     React.render(<TrelloBoard board={boardId} />, document.body);
+
+    var typingTimer;
+    $('#queryInput').on('keyup', function() {
+      clearTimeout(typingTimer);
+      var queryInput = this;
+      typingTimer = setTimeout(function() {
+        console.log(Query.parse($(queryInput).val()));
+      }, 500);
+    });
+
+    $('#queryInput').on('keydown', function() {
+      clearTimeout(typingTimer);
+    });
+
   };
 
   return App;

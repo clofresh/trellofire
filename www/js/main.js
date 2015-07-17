@@ -11,9 +11,7 @@ require.config({
   },
 
   shim: {
-    bootstrap: {
-      deps: ['jquery']
-    },
+    bootstrap: ['jquery'],
     JSXTransformer: "JSXTransformer",
     react: {
       exports: "React"
@@ -21,7 +19,7 @@ require.config({
     trello: {
       deps: ['jquery'],
       exports: 'Trello',
-    },
+    }
   },
 
   config: {
