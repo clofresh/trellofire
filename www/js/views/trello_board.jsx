@@ -2,11 +2,12 @@ var deps = [
   'react',
   'trello',
   'query',
+  'stores/lists',
   'jsx!./trello_group',
   'jsx!./query_bar'
 ];
 
-define(deps, function(React, Trello, Query, TrelloGroup, QueryBar) {
+define(deps, function(React, Trello, Query, Lists, TrelloGroup, QueryBar) {
   return React.createClass({
     getInitialState: function() {
       return {
@@ -25,7 +26,7 @@ define(deps, function(React, Trello, Query, TrelloGroup, QueryBar) {
       }, function(data) {
         for (var i = 0; i < data.lists.length; i++) {
           var list = data.lists[i];
-          lists[list.id] = list;
+          Lists.set(list.id, list);
         }
         this.setState({
           response: data,
@@ -113,7 +114,7 @@ define(deps, function(React, Trello, Query, TrelloGroup, QueryBar) {
 
     groupName: function(group) {
       if (this.state.query.groupby === "idList") {
-        var list = lists[group];
+        var list = Lists.get(group);
         if (list !== undefined) {
           return list.name;
         } else {
