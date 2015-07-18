@@ -68,12 +68,16 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
         );
       });
 
+      var heading;
+      if (this.props.group !== null) {
+        heading = <div className="panel-heading">
+                    <h1 className="panel-title">{this.props.group}</h1>
+                  </div>;
+      }
 
       return (
         <div className="trelloGroup panel panel-info">
-          <div className="panel-heading">
-            <h1 className="panel-title">{this.props.group}</h1>
-          </div>
+          {heading}
           <table className="trello table table-striped">
             <thead>
               <tr>
@@ -141,10 +145,11 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
       var grouped = {};
       var cards = this.state.response.cards;
       var titleFilter = this.state.query.title;
+      var groupby = this.state.query.groupby;
       for (var i = 0; i < cards.length; i++) {
         var card = cards[i];
         if (titleFilter === undefined || card.name.match(titleFilter)) {
-          var key = card[this.state.query.groupby];
+          var key = card[groupby] || "ungrouped";
           if (grouped[key] === undefined) {
             grouped[key] = [card];
           } else {
@@ -161,13 +166,20 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
           return a[sortKey] > b[sortKey];
         };
       }
+
       for (var group in grouped) {
         var cards = grouped[group];
         if (sorter !== null) {
           cards.sort(sorter);
         }
+        var groupName;
+        if (groupby === undefined) {
+          groupName = null;
+        } else {
+          groupName = this.groupName(group);
+        }
         groups.push(
-          <TrelloGroup group={this.groupName(group)} cards={cards} />
+          <TrelloGroup group={groupName} cards={cards} />
         );
       }
 
@@ -180,7 +192,12 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
 
     groupName: function(group) {
       if (this.state.query.groupby === "idList") {
-        return lists[group].name;
+        var list = lists[group];
+        if (list !== undefined) {
+          return list.name;
+        } else {
+          return "N/A";
+        }
       } else {
         return group;
       }
