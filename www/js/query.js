@@ -1,5 +1,6 @@
 define(["./peg/grammar"], function(peg) {
   return {
+    defaultQuery: "board:nC8QJJoZ groupby:idList",
     parse: function(str) {
       var output = {
         filters: []
