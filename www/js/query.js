@@ -10,6 +10,7 @@ define(["./peg/grammar"], function(peg) {
         switch (key) {
           case "board":
           case "groupby":
+          case "title":
             output[key] = val;
         }
       }

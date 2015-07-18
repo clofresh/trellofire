@@ -50,8 +50,8 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
           <td className="checkCol">
             <input type="checkbox" />
           </td>
-          <td className="nameCol"><a href={this.props.data.url}>{this.props.data.name}</a></td>
-          <td className="nameCol">{lists[this.props.data.idList].name}</td>
+          <td className="titleCol"><a href={this.props.data.url}>{this.props.data.name}</a></td>
+          <td className="listCol">{lists[this.props.data.idList].name}</td>
           <td className="stateCol">{this.props.data.closed ? "closed" : "open"}</td>
           <td className="dueCol">{this.props.data.due}</td>
         </tr>
@@ -78,7 +78,7 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
             <thead>
               <tr>
                 <th className="checkCol">&nbsp;</th>
-                <th className="nameCol">Name</th>
+                <th className="titleCol">Title</th>
                 <th className="listCol">List</th>
                 <th className="stateCol">State</th>
                 <th className="dueCol">Due</th>
@@ -140,13 +140,16 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
     render: function() {
       var grouped = {};
       var cards = this.state.response.cards;
+      var titleFilter = this.state.query.title;
       for (var i = 0; i < cards.length; i++) {
         var card = cards[i];
-        var key = card[this.state.query.groupby];
-        if (grouped[key] === undefined) {
-          grouped[key] = [card];
-        } else {
-          grouped[key].push(card);
+        if (titleFilter === undefined || card.name.match(titleFilter)) {
+          var key = card[this.state.query.groupby];
+          if (grouped[key] === undefined) {
+            grouped[key] = [card];
+          } else {
+            grouped[key].push(card);
+          }
         }
       }
 
