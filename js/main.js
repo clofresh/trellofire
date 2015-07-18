@@ -48,13 +48,10 @@ require(['jsx!app', 'jquery', 'trello', 'bootstrap', 'util'], function(
     expiration: "never",
     success: function() {
       var qstr = Util.getQueryString();
-      if (qstr.board === undefined) {
-        Util.setQueryString({
-          board: 'nC8QJJoZ' // Default to Trello's public dev board
-        });
-      } else {
-        App.init(qstr.board);
-      }
+      var query = qstr.q
+        || localStorage.query
+        || 'board:nC8QJJoZ groupby:idList';
+      App.init(query);
     },
     error: function() {
       alert('error');

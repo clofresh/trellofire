@@ -13,7 +13,7 @@ define([
           cards: []
         },
         filtered: [],
-        query: Query.parse(Query.defaultQuery)
+        query: Query.parse(this.props.defaultQuery)
       };
     },
     updateBoard: function(query) {
@@ -105,7 +105,7 @@ define([
 
       return (
         <div className="container">
-          <QueryBar onUpdate={this.updateQuery} /> {groups}
+          <QueryBar defaultQuery={this.props.defaultQuery} onUpdate={this.updateQuery} /> {groups}
         </div>
       );
     },
