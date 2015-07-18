@@ -1,0 +1,13 @@
+
+main.js
+----------------
+peg/grammar.js
+query.js
+stores/lists.js
+jsx!views/trello_item
+jsx!views/trello_group
+jsx!views/query_bar
+jsx!views/trello_board
+jsx!app
+util.js
+main.js

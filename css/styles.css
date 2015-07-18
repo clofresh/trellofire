@@ -1,0 +1,26 @@
+table.trello {
+  width: 100%;
+  table-layout: fixed;
+  white-space: nowrap;
+}
+table.trello td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+table.trello .checkCol {
+  overflow: visible;
+  width: 3%;
+}
+table.trello .titleCol {
+  width: 60%;
+}
+table.trello .listCol {
+  width: 17%;
+}
+table.trello .stateCol {
+  width: 8%;
+}
+table.trello .dueCol {
+  width: 7%;
+}
