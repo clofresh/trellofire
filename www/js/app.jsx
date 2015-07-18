@@ -65,7 +65,7 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
     render: function() {
       var rows = this.props.cards.map(function(card) {
         return (
-          <TrelloItem data={card} />
+          <TrelloItem key={card.id} data={card} />
         );
       });
 
@@ -192,7 +192,7 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
           groupName = this.groupName(group);
         }
         groups.push(
-          <TrelloGroup group={groupName} cards={cards} />
+          <TrelloGroup key={group} group={groupName} cards={cards} />
         );
       }
 
