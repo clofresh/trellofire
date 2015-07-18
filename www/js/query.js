@@ -1,19 +1,25 @@
 define(["./peg/grammar"], function(peg) {
   return {
     parse: function(str) {
-      var output = {};
+      var output = {
+        filters: []
+      };
       var terms = peg.parse(str);
       for (var i = 0; i < terms.length; ++i) {
         var term = terms[i];
-        var key = term[0];
-        var val = term[1];
-        switch (key) {
+
+        var field = term.field;
+        var value = term.value;
+        switch (field) {
           case "board":
           case "groupby":
-          case "title":
           case "sort":
           case "sortdir":
-            output[key] = val;
+            output[field] = value;
+            break;
+          case "title":
+            output.filters.push(term);
+            break;
         }
       }
       output.terms = terms;

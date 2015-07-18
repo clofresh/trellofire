@@ -1,6 +1,7 @@
 define(['react', 'trello', 'query'], function(React, Trello, Query) {
 
   var lists = {};
+  var defaultQuery = "board:nC8QJJoZ groupby:idList";
 
   var QueryBar = React.createClass({
     getDefaultProps: function() {
@@ -9,7 +10,7 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
       };
     },
     getInitialState: function() {
-      return Query.parse("board:nC8QJJoZ groupby:idList");
+      return Query.parse(defaultQuery);
     },
     handleSubmit: function(event) {
       event.preventDefault();
@@ -50,7 +51,7 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
           <td className="checkCol">
             <input type="checkbox" />
           </td>
-          <td className="titleCol"><a href={this.props.data.url}>{this.props.data.name}</a></td>
+          <td className="title;Col"><a href={this.props.data.url}>{this.props.data.name}</a></td>
           <td className="listCol">{lists[this.props.data.idList].name}</td>
           <td className="stateCol">{this.props.data.closed ? "closed" : "open"}</td>
           <td className="dueCol">{this.props.data.due}</td>
@@ -105,10 +106,7 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
           cards: []
         },
         filtered: [],
-        query: {
-          board: 'nC8QJJoZ',
-          groupby: 'idList'
-        }
+        query: Query.parse(defaultQuery)
       };
     },
     updateBoard: function(query) {
@@ -144,11 +142,24 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
     render: function() {
       var grouped = {};
       var cards = this.state.response.cards;
-      var titleFilter = this.state.query.title;
+      var filters = this.state.query.filters;
       var groupby = this.state.query.groupby;
-      for (var i = 0; i < cards.length; i++) {
+      for (var i = 0; i < cards.length; ++i) {
         var card = cards[i];
-        if (titleFilter === undefined || card.name.match(titleFilter)) {
+
+        // Apply the filters
+        var matched = true;
+        for (var j = 0; j < filters.length; ++j) {
+          var filter = filters[j];
+          if (filter.op && filter.op.name == "not") {
+            matched = matched && !card.name.match(filter.value);
+          } else {
+            matched = matched && card.name.match(filter.value);
+          }
+        }
+
+        if (matched) {
+          // Apply the grouping
           var key = card[groupby] || "ungrouped";
           if (grouped[key] === undefined) {
             grouped[key] = [card];
@@ -158,7 +169,7 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
         }
       }
 
-      var groups = [];
+      // Apply the sorting
       var sortKey = this.state.query.sort;
       var sorter = null;
       if (sortKey !== undefined) {
@@ -167,6 +178,8 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
         };
       }
 
+      // Render the groups
+      var groups = [];
       for (var group in grouped) {
         var cards = grouped[group];
         if (sorter !== null) {

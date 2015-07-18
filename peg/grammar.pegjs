@@ -16,11 +16,24 @@ query
 }
 
 term
- = field:identifier ":" value:string { return [field, value] }
+ = uop:not? field:filter ":" value:string {
+     return {
+         field: field,
+         value: value,
+         op:    uop
+     }
+ }
+ / field:identifier ":" value:string { return {field: field, value: value} }
 
 identifier
- = first:[A-Za-z] rest:[A-Za-z0-9_]* { return first + strconcat(rest) }
+ = "board" / "groupby" / "sort" / "sortdir" / filter
+
+filter
+ = "title"
 
 string
  = '"' val:[^"]+ '"' { return strconcat(val) }
  / val:[^ ]+         { return strconcat(val) }
+
+not
+ = "!" [ ]* { return {type: "unary", name: "not"} }
