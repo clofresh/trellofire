@@ -1,13 +1,11 @@
-var deps = [
+define([
   'react',
   'trello',
   'query',
   'stores/lists',
   'jsx!./trello_group',
   'jsx!./query_bar'
-];
-
-define(deps, function(React, Trello, Query, Lists, TrelloGroup, QueryBar) {
+], function(React, Trello, Query, Lists, TrelloGroup, QueryBar) {
   return React.createClass({
     getInitialState: function() {
       return {

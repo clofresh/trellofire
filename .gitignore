@@ -1,2 +1,2 @@
-www/css/styles.css
-www/js/peg/*.js
+build
+js/peg/*.js
