@@ -154,10 +154,20 @@ define(['react', 'trello', 'query'], function(React, Trello, Query) {
       }
 
       var groups = [];
-
+      var sortKey = this.state.query.sort;
+      var sorter = null;
+      if (sortKey !== undefined) {
+        sorter = function(a, b) {
+          return a[sortKey] > b[sortKey];
+        };
+      }
       for (var group in grouped) {
+        var cards = grouped[group];
+        if (sorter !== null) {
+          cards.sort(sorter);
+        }
         groups.push(
-          <TrelloGroup group={this.groupName(group)} cards={grouped[group]} />
+          <TrelloGroup group={this.groupName(group)} cards={cards} />
         );
       }
 

@@ -11,6 +11,8 @@ define(["./peg/grammar"], function(peg) {
           case "board":
           case "groupby":
           case "title":
+          case "sort":
+          case "sortdir":
             output[key] = val;
         }
       }
