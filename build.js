@@ -1,10 +1,8 @@
 ({
   appDir: "./js",
   baseUrl: "./",
-  dir: "./build/release/js",
   mainConfigFile: "./js/main.js",
 
-  optimize: "uglify2",
   skipDirOptimize: true,
   generateSourceMaps: true,
   findNestedDependencies: true,
