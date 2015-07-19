@@ -1,11 +1,14 @@
 define([
   'react',
   'trello',
+  'action',
   'query',
   'stores/lists',
+  'stores/selected',
   'jsx!./trello_group',
   'jsx!./query_bar'
-], function(React, Trello, Query, Lists, TrelloGroup, QueryBar) {
+], function(React, Trello, Action, Query, Lists, Selected, TrelloGroup,
+  QueryBar) {
   return React.createClass({
     getInitialState: function() {
       return {
@@ -13,7 +16,7 @@ define([
           cards: []
         },
         filtered: [],
-        query: Query.parse(Query.defaultQuery)
+        query: Query.parse(this.props.defaultQuery)
       };
     },
     updateBoard: function(query) {
@@ -44,6 +47,74 @@ define([
         this.state.query = query;
         this.setState(this.state);
       }
+    },
+
+    handleActionMenu: function(event) {
+      // If any items are selected, open the context menu
+      if (Selected.any()) {
+        event.preventDefault();
+
+        // Move the context menu to the click position
+        var menu = document.getElementById('context-menu');
+        menu.style.left = JSON.stringify(event.pageX - 100) + 'px';
+        menu.style.top = JSON.stringify(event.pageY - 80) + 'px';
+
+        // Display it
+        if (!menu.classList.contains('open')) {
+          menu.classList.add('open');
+        }
+
+        // Clear the input and move the keyboard focus there
+        var input = document.getElementById('context-menu-input');
+        input.value = "";
+        input.focus();
+
+        // Set up an event handle to close the menu on esc key
+        document.onkeydown = function(event) {
+          if (event.keyCode === 27) { // Esc key code
+            this.closeMenu();
+            event.preventDefault();
+          }
+        }.bind(this);
+      }
+    },
+
+    closeMenu: function() {
+      var menu = document.getElementById('context-menu');
+      menu.classList.remove('open');
+      document.onkeydown = null;
+    },
+
+    handleActionSubmit: function(event) {
+      event.preventDefault();
+      var parsed = Action.parse(event.target.getElementsByTagName('input')[0].value);
+      var cardIds = Selected.getSelected();
+      for (var field in parsed.fields) {
+        switch (field) {
+          case "title":
+            var newVal = parsed.fields[field];
+            var pending = [];
+            for (var i = 0; i < cardIds.length; ++i) {
+              var cardId = cardIds[i];
+              console.log(cardId, newVal);
+              pending.push(Trello.put('cards/' + cardId + '/name',
+                {
+                  value: newVal
+                }));
+              for (var j = 0; j < this.state.response.cards.length; ++j) {
+                var card = this.state.response.cards[i];
+                if (card.id === cardId) {
+                  card.name = newVal;
+                }
+              }
+            }
+            console.log(pending);
+            // /1/cards/[card id or shortlink]/name
+            break;
+        }
+      }
+      this.setState(this.state);
+      this.closeMenu();
     },
 
     render: function() {
@@ -104,8 +175,18 @@ define([
       }
 
       return (
-        <div className="container">
-          <QueryBar onUpdate={this.updateQuery} /> {groups}
+        <div className="container" onContextMenu={this.handleActionMenu}>
+          <QueryBar defaultQuery={this.props.defaultQuery} onUpdate={this.updateQuery} /> {groups}
+          <div id="context-menu" className="dropdown">
+            <ul className="dropdown-menu">
+              <li>
+                <form id="action-form" onSubmit={this.handleActionSubmit}>
+                  <label>Action: </label>
+                  <input id="context-menu-input" text="type" />
+                </form>
+              </li>
+            </ul>
+          </div>
         </div>
       );
     },

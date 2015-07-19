@@ -24,3 +24,13 @@ table.trello .stateCol {
 table.trello .dueCol {
   width: 7%;
 }
+#context-menu {
+  position: absolute;
+  display: none;
+}
+#context-menu li {
+  padding: 5px 10px 5px 10px;
+}
+#context-menu.open {
+  display: block;
+}

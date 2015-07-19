@@ -1,9 +1,12 @@
 
 main.js
 ----------------
-peg/grammar.js
+peg/action.js
+action.js
+peg/query.js
 query.js
 stores/lists.js
+stores/selected.js
 jsx!views/trello_item
 jsx!views/trello_group
 jsx!views/query_bar

@@ -6,7 +6,7 @@ define(['react', 'query'], function(React, Query) {
       };
     },
     getInitialState: function() {
-      return Query.parse(Query.defaultQuery);
+      return Query.parse(this.props.defaultQuery);
     },
     handleSubmit: function(event) {
       event.preventDefault();
@@ -28,7 +28,15 @@ define(['react', 'query'], function(React, Query) {
           str: ""
         };
       } else {
-        state = Query.parse(val);
+        try {
+          state = Query.parse(val);
+          var url = window.location.origin + window.location.pathname
+            + '?q=' + encodeURIComponent(val);
+          history.replaceState(null, null, url);
+          localStorage.query = val;
+        } catch ( e ) {
+          console.log(e);
+        }
       }
       this.setState(state);
       this.props.onUpdate(state);
