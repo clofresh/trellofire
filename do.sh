@@ -31,17 +31,21 @@ function compile_less() {
     DEST=${1-./build/dev/css}
 
     mkdir -p $DEST
+    rm -f $DEST/*.css
     echo "[compile_less] Compiling ${SRC}/*.less => ${DEST}/styles.css"
     lessc $SRC/*.less > $DEST/styles.css
 }
 
 function compile_peg() {
+    rm -f js/peg/*.js
     for SRC in peg/*.pegjs
     do
+        NAME=$(basename $SRC)
+        NAME=${NAME%.pegjs}
         DEST="js/${SRC%.pegjs}.js"
         echo "[compile_peg] Compiling ${SRC} => ${DEST}"
-        pegjs -e "var _parser" "$SRC" "$DEST"
-        echo "define(function() { return _parser; });" >> "$DEST"
+        pegjs -e "var _${NAME}_parser" "$SRC" "$DEST"
+        echo "define(function() { return _${NAME}_parser; });" >> "$DEST"
     done
 }
 

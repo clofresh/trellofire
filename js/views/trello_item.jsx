@@ -1,17 +1,26 @@
-define(['react', 'stores/lists'], function(React, Lists) {
+define([
+  'react',
+  'stores/lists',
+  'stores/selected'
+], function(React, Lists, Selected) {
+
   return React.createClass({
     getInitialState: function() {
       return {
         checked: false
       };
     },
+
     handleClick: function(event) {
       if (event.target.tagName !== "A") {
+        var newVal = !this.state.checked;
         this.setState({
-          checked: !this.state.checked
+          checked: newVal
         });
+        Selected.set(this.props.data.id, newVal);
       }
     },
+
     render: function() {
       return (
         <tr className="trelloItem" onClick={this.handleClick}>
@@ -26,4 +35,5 @@ define(['react', 'stores/lists'], function(React, Lists) {
       );
     }
   });
+
 });

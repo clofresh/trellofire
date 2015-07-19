@@ -1,8 +1,8 @@
-define(["./peg/query"], function(Parser) {
+define(["./peg/action"], function(Parser) {
   return {
     parse: function(str) {
       var output = {
-        filters: []
+        fields: {}
       };
       var terms = Parser.parse(str);
       for (var i = 0; i < terms.length; ++i) {
@@ -11,14 +11,8 @@ define(["./peg/query"], function(Parser) {
         var field = term.field;
         var value = term.value;
         switch (field) {
-          case "board":
-          case "groupby":
-          case "sort":
-          case "sortdir":
-            output[field] = value;
-            break;
           case "title":
-            output.filters.push(term);
+            output.fields[field] = value;
             break;
         }
       }

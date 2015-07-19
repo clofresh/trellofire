@@ -51,7 +51,7 @@ require(['jsx!app', 'jquery', 'trello', 'bootstrap', 'util'], function(
       var query = qstr.q
         || localStorage.query
         || 'board:nC8QJJoZ groupby:idList';
-      App.init(query);
+      App.init(query, document.getElementById('app'));
     },
     error: function() {
       alert('error');
