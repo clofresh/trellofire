@@ -4,7 +4,7 @@ function start_server() {
 
     cd $DIR
     CMD="python -m http.server $PORT"
-    stop_servers $PORT
+    stop_server $PORT
     $CMD &
     PID=$!
     echo "[start_server] Starting server in ${DIR} at port ${PORT} (pid: $PID)"
