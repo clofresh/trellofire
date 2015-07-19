@@ -5,4 +5,9 @@ do
     source "$f"
 done
 
-$@
+if [ $# == 0 ]
+then
+    build
+else
+    $@
+fi
