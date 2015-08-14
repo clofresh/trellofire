@@ -29,7 +29,7 @@ identifier
  = "board" / "groupby" / "sort" / "sortdir" / filter
 
 filter
- = "title"
+ = "title" / "state"
 
 string
  = '"' val:[^"]+ '"' { return strconcat(val) }

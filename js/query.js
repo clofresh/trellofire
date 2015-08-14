@@ -18,7 +18,20 @@ define(["./peg/query"], function(Parser) {
             output[field] = value;
             break;
           case "title":
+            term.field = "name";
             output.filters.push(term);
+            break;
+          case "state":
+            term.field = "closed";
+            if (term.value === "closed") {
+              term.value = true;
+              output.filters.push(term);
+            } else if (term.value === "open") {
+              term.value = false;
+              output.filters.push(term);
+            } else {
+              console.log("Ignoring state filter: " + term.value);
+            }
             break;
         }
       }

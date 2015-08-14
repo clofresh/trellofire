@@ -129,10 +129,22 @@ define([
         var matched = true;
         for (var j = 0; j < filters.length; ++j) {
           var filter = filters[j];
-          if (filter.op && filter.op.name == "not") {
-            matched = matched && !card.name.match(filter.value);
-          } else {
-            matched = matched && card.name.match(filter.value);
+          var fieldVal = card[filter.field];
+          switch (typeof fieldVal) {
+            case "boolean":
+              if (filter.op && filter.op.name == "not") {
+                matched = matched && fieldVal !== filter.value;
+              } else {
+                matched = matched && fieldVal === filter.value;
+              }
+              break;
+            case "string":
+              if (filter.op && filter.op.name == "not") {
+                matched = matched && !fieldVal.match(filter.value);
+              } else {
+                matched = matched && fieldVal.match(filter.value);
+              }
+              break;
           }
         }
 

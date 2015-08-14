@@ -35,11 +35,18 @@ define(['react', 'query'], function(React, Query) {
           history.replaceState(null, null, url);
           localStorage.query = val;
         } catch ( e ) {
-          console.log(e);
+          if (e.message) {
+            console.log(e);
+            alert(e.message);
+          } else {
+            console.log(e);
+          }
         }
       }
-      this.setState(state);
-      this.props.onUpdate(state);
+      if (state !== undefined) {
+        this.setState(state);
+        this.props.onUpdate(state);
+      }
     },
     render: function() {
       return (
