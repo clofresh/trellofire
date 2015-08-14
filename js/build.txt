@@ -4,8 +4,8 @@ main.js
 peg/action.js
 action.js
 peg/query.js
-query.js
 stores/lists.js
+query.js
 stores/selected.js
 jsx!views/trello_item
 jsx!views/trello_group

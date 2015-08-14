@@ -30,6 +30,7 @@ define([
           <td className="titleCol"><a href={this.props.data.url}>{this.props.data.name}</a></td>
           <td className="listCol">{Lists.get(this.props.data.idList).name}</td>
           <td className="stateCol">{this.props.data.closed ? "closed" : "open"}</td>
+          <td className="modCol">{this.props.data.dateLastActivity}</td>
           <td className="dueCol">{this.props.data.due}</td>
         </tr>
       );

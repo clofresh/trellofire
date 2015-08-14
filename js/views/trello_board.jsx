@@ -129,10 +129,22 @@ define([
         var matched = true;
         for (var j = 0; j < filters.length; ++j) {
           var filter = filters[j];
-          if (filter.op && filter.op.name == "not") {
-            matched = matched && !card.name.match(filter.value);
-          } else {
-            matched = matched && card.name.match(filter.value);
+          var fieldVal = card[filter.field];
+          switch (typeof fieldVal) {
+            case "boolean":
+              if (filter.op && filter.op.name == "not") {
+                matched = matched && fieldVal !== filter.value;
+              } else {
+                matched = matched && fieldVal === filter.value;
+              }
+              break;
+            case "string":
+              if (filter.op && filter.op.name == "not") {
+                matched = matched && !fieldVal.match(filter.value);
+              } else {
+                matched = matched && fieldVal.match(filter.value);
+              }
+              break;
           }
         }
 
@@ -147,19 +159,12 @@ define([
         }
       }
 
-      // Apply the sorting
-      var sortKey = this.state.query.sort;
-      var sorter = null;
-      if (sortKey !== undefined) {
-        sorter = function(a, b) {
-          return a[sortKey] > b[sortKey];
-        };
-      }
-
       // Render the groups
+      var sorter = this.state.query.sorter;
       var groups = [];
       for (var group in grouped) {
         var cards = grouped[group];
+        // Apply the sorting
         if (sorter !== null) {
           cards.sort(sorter);
         }
@@ -192,15 +197,24 @@ define([
     },
 
     groupName: function(group) {
-      if (this.state.query.groupby === "idList") {
-        var list = Lists.get(group);
-        if (list !== undefined) {
-          return list.name;
-        } else {
-          return "N/A";
-        }
-      } else {
-        return group;
+      switch (this.state.query.groupby) {
+        case "idList":
+          var list = Lists.get(group);
+          if (list !== undefined) {
+            return list.name;
+          } else {
+            return "N/A";
+          }
+          break;
+        case "closed":
+          if (group === "true") { // Yep, string true, not bool
+            return "closed";
+          } else {
+            return "open";
+          }
+          break;
+        default:
+          return group;
       }
     }
   });

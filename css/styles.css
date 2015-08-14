@@ -3,6 +3,7 @@ table.trello {
   table-layout: fixed;
   white-space: nowrap;
 }
+table.trello th,
 table.trello td {
   white-space: nowrap;
   overflow: hidden;
@@ -10,19 +11,16 @@ table.trello td {
 }
 table.trello .checkCol {
   overflow: visible;
-  width: 3%;
+  width: 30px;
 }
 table.trello .titleCol {
-  width: 60%;
+  width: 50%;
 }
 table.trello .listCol {
-  width: 17%;
+  min-width: 60px;
 }
 table.trello .stateCol {
-  width: 8%;
-}
-table.trello .dueCol {
-  width: 7%;
+  min-width: 60px;
 }
 #context-menu {
   position: absolute;

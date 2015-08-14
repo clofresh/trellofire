@@ -24,6 +24,7 @@ define(['react', 'jsx!./trello_item'], function(React, TrelloItem) {
                 <th className="titleCol">Title</th>
                 <th className="listCol">List</th>
                 <th className="stateCol">State</th>
+                <th className="modCol">Last modified</th>
                 <th className="dueCol">Due</th>
               </tr>
             </thead>
