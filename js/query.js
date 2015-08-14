@@ -1,4 +1,8 @@
 define(["./peg/query"], function(Parser) {
+  var groupbys = {
+    "list": "idList",
+    "state": "closed"
+  };
   return {
     parse: function(str) {
       var output = {
@@ -12,10 +16,12 @@ define(["./peg/query"], function(Parser) {
         var value = term.value;
         switch (field) {
           case "board":
-          case "groupby":
           case "sort":
           case "sortdir":
             output[field] = value;
+            break;
+          case "groupby":
+            output[field] = groupbys[value] || value;
             break;
           case "title":
             term.field = "name";

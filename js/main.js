@@ -50,7 +50,7 @@ require(['jsx!app', 'jquery', 'trello', 'bootstrap', 'util'], function(
       var qstr = Util.getQueryString();
       var query = qstr.q
         || localStorage.query
-        || 'board:nC8QJJoZ groupby:idList';
+        || 'board:nC8QJJoZ groupby:list';
       App.init(query, document.getElementById('app'));
     },
     error: function() {

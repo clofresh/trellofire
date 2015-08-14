@@ -204,15 +204,24 @@ define([
     },
 
     groupName: function(group) {
-      if (this.state.query.groupby === "idList") {
-        var list = Lists.get(group);
-        if (list !== undefined) {
-          return list.name;
-        } else {
-          return "N/A";
-        }
-      } else {
-        return group;
+      switch (this.state.query.groupby) {
+        case "idList":
+          var list = Lists.get(group);
+          if (list !== undefined) {
+            return list.name;
+          } else {
+            return "N/A";
+          }
+          break;
+        case "closed":
+          if (group === "true") { // Yep, string true, not bool
+            return "closed";
+          } else {
+            return "open";
+          }
+          break;
+        default:
+          return group;
       }
     }
   });
