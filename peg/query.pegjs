@@ -26,7 +26,7 @@ term
  / field:identifier ":" value:string { return {field: field, value: value} }
 
 identifier
- = "board" / "groupby" / "sort" / "sortdir" / filter
+ = "board" / "groupby" / "sortdir" / "sort" / filter
 
 filter
  = "title" / "state"

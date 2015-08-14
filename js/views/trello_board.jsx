@@ -159,19 +159,12 @@ define([
         }
       }
 
-      // Apply the sorting
-      var sortKey = this.state.query.sort;
-      var sorter = null;
-      if (sortKey !== undefined) {
-        sorter = function(a, b) {
-          return a[sortKey] > b[sortKey];
-        };
-      }
-
       // Render the groups
+      var sorter = this.state.query.sorter;
       var groups = [];
       for (var group in grouped) {
         var cards = grouped[group];
+        // Apply the sorting
         if (sorter !== null) {
           cards.sort(sorter);
         }
